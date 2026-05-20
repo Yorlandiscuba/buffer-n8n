@@ -230,6 +230,11 @@ export class Buffer implements INodeType {
 						description: 'Add the post to the publishing queue',
 					},
 					{
+						name: 'Share Next',
+						value: 'shareNext',
+						description: 'Add the post to the front of the queue',
+					},
+					{
 						name: 'Custom Schedule',
 						value: 'customScheduled',
 						description: 'Schedule the post for a specific time',
@@ -280,11 +285,423 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['instagram', 'tiktok', 'youtube', 'Instagram', 'TikTok', 'YouTube', 'INSTAGRAM', 'TIKTOK', 'YOUTUBE'],
+						channelService: ['instagram', 'tiktok', 'youtube', 'Instagram', 'TikTok', 'YouTube', 'INSTAGRAM', 'TIKTOK', 'YOUTUBE', 'facebook_group', 'Facebook_Group', 'FACEBOOK_GROUP'],
 					},
 				},
 				default: 'automatic',
 				description: 'How the post should be scheduled',
+			},
+			{
+				displayName: 'Google Business Post Type',
+				name: 'googlePostType',
+				type: 'options',
+				options: [
+					{
+						name: "What's New",
+						value: 'whats_new',
+						description: 'A standard Google Business post',
+					},
+					{
+						name: 'Offer',
+						value: 'offer',
+						description: 'A Google Business offer',
+					},
+					{
+						name: 'Event',
+						value: 'event',
+						description: 'A Google Business event',
+					},
+				],
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+					},
+				},
+				default: 'whats_new',
+				description: 'The type of Google Business post to create',
+			},
+			// ----------------------------------
+			//   Google Business: What's New fields
+			// ----------------------------------
+			{
+				displayName: 'Action Button',
+				name: 'googleWhatsNewButton',
+				type: 'options',
+				options: [
+					{ name: 'None', value: 'none' },
+					{ name: 'Book', value: 'book' },
+					{ name: 'Order', value: 'order' },
+					{ name: 'Shop', value: 'shop' },
+					{ name: 'Learn More', value: 'learn_more' },
+					{ name: 'Sign Up', value: 'signup' },
+					{ name: 'Call', value: 'call' },
+				],
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['whats_new'],
+					},
+				},
+				default: 'none',
+				description: 'The call-to-action button for the post',
+			},
+			{
+				displayName: 'Action Button Link',
+				name: 'googleWhatsNewLink',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['whats_new'],
+					},
+				},
+				default: '',
+				description: 'URL for the action button',
+			},
+			// ----------------------------------
+			//   Google Business: Offer fields
+			// ----------------------------------
+			{
+				displayName: 'Offer Title',
+				name: 'googleOfferTitle',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'Title of the offer',
+			},
+			{
+				displayName: 'Offer Start Date',
+				name: 'googleOfferStartDate',
+				type: 'dateTime',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'Start date of the offer',
+			},
+			{
+				displayName: 'Offer End Date',
+				name: 'googleOfferEndDate',
+				type: 'dateTime',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'End date of the offer',
+			},
+			{
+				displayName: 'Coupon Code',
+				name: 'googleOfferCode',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'Coupon code for the offer',
+			},
+			{
+				displayName: 'Offer Link',
+				name: 'googleOfferLink',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'Link to the offer',
+			},
+			{
+				displayName: 'Terms & Conditions',
+				name: 'googleOfferTerms',
+				type: 'string',
+				typeOptions: {
+					rows: 3,
+				},
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'Terms and conditions of the offer',
+			},
+			// ----------------------------------
+			//   Google Business: Event fields
+			// ----------------------------------
+			{
+				displayName: 'Event Title',
+				name: 'googleEventTitle',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['event'],
+					},
+				},
+				default: '',
+				description: 'Title of the event',
+			},
+			{
+				displayName: 'Event Start Date',
+				name: 'googleEventStartDate',
+				type: 'dateTime',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['event'],
+					},
+				},
+				default: '',
+				description: 'Start date of the event',
+			},
+			{
+				displayName: 'Event End Date',
+				name: 'googleEventEndDate',
+				type: 'dateTime',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['event'],
+					},
+				},
+				default: '',
+				description: 'End date of the event',
+			},
+			{
+				displayName: 'Full Day Event',
+				name: 'googleEventIsFullDay',
+				type: 'boolean',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['event'],
+					},
+				},
+				default: false,
+				description: 'Whether the event is a full day event (no specific start/end time)',
+			},
+			{
+				displayName: 'Action Button',
+				name: 'googleEventButton',
+				type: 'options',
+				options: [
+					{ name: 'None', value: 'none' },
+					{ name: 'Book', value: 'book' },
+					{ name: 'Order', value: 'order' },
+					{ name: 'Shop', value: 'shop' },
+					{ name: 'Learn More', value: 'learn_more' },
+					{ name: 'Sign Up', value: 'signup' },
+					{ name: 'Call', value: 'call' },
+				],
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['event'],
+					},
+				},
+				default: 'none',
+				description: 'The call-to-action button for the event',
+			},
+			{
+				displayName: 'Action Button Link',
+				name: 'googleEventLink',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						googlePostType: ['event'],
+					},
+				},
+				default: '',
+				description: 'URL for the action button',
+			},
+			{
+				displayName: 'Facebook Post Type',
+				name: 'facebookPostType',
+				type: 'options',
+				options: [
+					{
+						name: 'Post',
+						value: 'post',
+						description: 'A standard Facebook feed post',
+					},
+					{
+						name: 'Story',
+						value: 'story',
+						description: 'A Facebook story',
+					},
+					{
+						name: 'Reel',
+						value: 'reel',
+						description: 'A Facebook reel',
+					},
+				],
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['facebook_page', 'Facebook_Page', 'FACEBOOK_PAGE'],
+					},
+				},
+				default: 'post',
+				description: 'The type of Facebook post to create',
+			},
+			{
+				displayName: 'First Comment',
+				name: 'facebookFirstComment',
+				type: 'string',
+				typeOptions: {
+					rows: 2,
+				},
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['facebook_page', 'Facebook_Page', 'FACEBOOK_PAGE'],
+					},
+				},
+				default: '',
+				description: 'Text for the first comment on the Facebook post',
+			},
+			{
+				displayName: 'Link Attachment URL',
+				name: 'facebookLinkAttachment',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['facebook_page', 'Facebook_Page', 'FACEBOOK_PAGE'],
+					},
+				},
+				default: '',
+				description: 'URL for a link preview attachment. Mutually exclusive with video assets.',
+			},
+			{
+				displayName: 'Instagram Post Type',
+				name: 'instagramPostType',
+				type: 'options',
+				options: [
+					{
+						name: 'Post',
+						value: 'post',
+						description: 'A standard Instagram feed post',
+					},
+					{
+						name: 'Story',
+						value: 'story',
+						description: 'An Instagram story',
+					},
+					{
+						name: 'Reel',
+						value: 'reel',
+						description: 'An Instagram reel',
+					},
+				],
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['instagram', 'Instagram', 'INSTAGRAM'],
+					},
+				},
+				default: 'post',
+				description: 'The type of Instagram post to create',
+			},
+			{
+				displayName: 'First Comment',
+				name: 'instagramFirstComment',
+				type: 'string',
+				typeOptions: {
+					rows: 2,
+				},
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['instagram', 'Instagram', 'INSTAGRAM'],
+					},
+				},
+				default: '',
+				description: 'Text for the first comment on the Instagram post',
+			},
+			{
+				displayName: 'Shop Grid Link',
+				name: 'instagramLink',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['instagram', 'Instagram', 'INSTAGRAM'],
+					},
+				},
+				default: '',
+				description: 'Shop Grid link for the post',
+			},
+			{
+				displayName: 'Share to Feed',
+				name: 'instagramShareToFeed',
+				type: 'boolean',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['instagram', 'Instagram', 'INSTAGRAM'],
+					},
+				},
+				default: true,
+				description: 'Whether the post should also appear on your Instagram feed (relevant for reels and stories)',
 			},
 			{
 				displayName: 'Attachment Type',
@@ -628,7 +1045,80 @@ export class Buffer implements INodeType {
 							channelId,
 							mode: shareMode,
 							schedulingType,
+							assets: [],
 						};
+
+						// Add channel-specific post type metadata
+						const channelService = channelIdComposite.split('|')[1];
+						if (channelService && channelService.toLowerCase() === 'instagram') {
+							const instagramPostType = this.getNodeParameter('instagramPostType', i) as string;
+							const shouldShareToFeed = this.getNodeParameter('instagramShareToFeed', i) as boolean;
+							const instagramFirstComment = this.getNodeParameter('instagramFirstComment', i) as string;
+							const instagramLink = this.getNodeParameter('instagramLink', i) as string;
+							const instagramMeta: IDataObject = {
+								type: instagramPostType,
+								shouldShareToFeed,
+							};
+							if (instagramFirstComment) instagramMeta.firstComment = instagramFirstComment;
+							if (instagramLink) instagramMeta.link = instagramLink;
+							input.metadata = { instagram: instagramMeta };
+						} else if (channelService && channelService.toLowerCase() === 'facebook_page') {
+							const facebookPostType = this.getNodeParameter('facebookPostType', i) as string;
+							const facebookFirstComment = this.getNodeParameter('facebookFirstComment', i) as string;
+							const facebookLinkAttachment = this.getNodeParameter('facebookLinkAttachment', i) as string;
+							const facebookMeta: IDataObject = { type: facebookPostType };
+							if (facebookFirstComment) facebookMeta.firstComment = facebookFirstComment;
+							if (facebookLinkAttachment) facebookMeta.linkAttachment = { url: facebookLinkAttachment };
+							input.metadata = { facebook: facebookMeta };
+						} else if (channelService && ['google', 'googlebusiness', 'google_business'].includes(channelService.toLowerCase())) {
+							const googlePostType = this.getNodeParameter('googlePostType', i) as string;
+							const googleMeta: IDataObject = { type: googlePostType };
+
+							if (googlePostType === 'whats_new') {
+								const button = this.getNodeParameter('googleWhatsNewButton', i) as string;
+								const link = this.getNodeParameter('googleWhatsNewLink', i) as string;
+								const details: IDataObject = {};
+								if (button) details.button = button;
+								if (link) details.link = link;
+								googleMeta.detailsWhatsNew = details;
+							} else if (googlePostType === 'offer') {
+								const title = this.getNodeParameter('googleOfferTitle', i) as string;
+								const startDate = this.getNodeParameter('googleOfferStartDate', i) as string;
+								const endDate = this.getNodeParameter('googleOfferEndDate', i) as string;
+								const code = this.getNodeParameter('googleOfferCode', i) as string;
+								const link = this.getNodeParameter('googleOfferLink', i) as string;
+								const terms = this.getNodeParameter('googleOfferTerms', i) as string;
+								if (title) googleMeta.title = title;
+								const details: IDataObject = {
+									title,
+									startDate: new Date(startDate).toISOString(),
+									endDate: new Date(endDate).toISOString(),
+								};
+								if (code) details.code = code;
+								if (link) details.link = link;
+								if (terms) details.terms = terms;
+								googleMeta.detailsOffer = details;
+							} else if (googlePostType === 'event') {
+								const title = this.getNodeParameter('googleEventTitle', i) as string;
+								const startDate = this.getNodeParameter('googleEventStartDate', i) as string;
+								const endDate = this.getNodeParameter('googleEventEndDate', i) as string;
+								const isFullDay = this.getNodeParameter('googleEventIsFullDay', i) as boolean;
+								const button = this.getNodeParameter('googleEventButton', i) as string;
+								const link = this.getNodeParameter('googleEventLink', i) as string;
+								if (title) googleMeta.title = title;
+								const details: IDataObject = {
+									title,
+									startDate: new Date(startDate).toISOString(),
+									endDate: new Date(endDate).toISOString(),
+									isFullDayEvent: isFullDay,
+								};
+								if (button) details.button = button;
+								if (link) details.link = link;
+								googleMeta.detailsEvent = details;
+							}
+
+							input.metadata = { google: googleMeta };
+						}
 
 						// Add text if provided
 						if (postText) {
