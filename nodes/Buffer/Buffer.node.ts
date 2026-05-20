@@ -414,12 +414,11 @@ export class Buffer implements INodeType {
 					}
 				`;
 
-				const response = await this.helpers.httpRequest({
+				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'bufferApi', {
 					method: 'POST' as IHttpRequestMethods,
 					url: apiUrl,
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${credentials.apiKey}`,
 					},
 					body: { query },
 					json: true,
@@ -454,12 +453,11 @@ export class Buffer implements INodeType {
 					}
 				`;
 
-				const response = await this.helpers.httpRequest({
+				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'bufferApi', {
 					method: 'POST' as IHttpRequestMethods,
 					url: apiUrl,
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${credentials.apiKey}`,
 					},
 					body: {
 						query,
@@ -577,12 +575,11 @@ export class Buffer implements INodeType {
 							variables: { input },
 						};
 
-						const response = await this.helpers.httpRequest({
+						const response = await this.helpers.httpRequestWithAuthentication.call(this, 'bufferApi', {
 							method: 'POST' as IHttpRequestMethods,
 							url: apiUrl,
 							headers: {
 								'Content-Type': 'application/json',
-								Authorization: `Bearer ${credentials.apiKey}`,
 							},
 							body,
 							json: true,
@@ -834,12 +831,11 @@ export class Buffer implements INodeType {
 							variables: { input },
 						};
 
-						const response = await this.helpers.httpRequest({
+						const response = await this.helpers.httpRequestWithAuthentication.call(this, 'bufferApi', {
 							method: 'POST' as IHttpRequestMethods,
 							url: apiUrl,
 							headers: {
 								'Content-Type': 'application/json',
-								Authorization: `Bearer ${credentials.apiKey}`,
 							},
 							body,
 							json: true,
