@@ -331,13 +331,13 @@ export class Buffer implements INodeType {
 				name: 'googleWhatsNewButton',
 				type: 'options',
 				options: [
-					{ name: 'None', value: 'none' },
 					{ name: 'Book', value: 'book' },
+					{ name: 'Call', value: 'call' },
+					{ name: 'Learn More', value: 'learn_more' },
+					{ name: 'None', value: 'none' },
 					{ name: 'Order', value: 'order' },
 					{ name: 'Shop', value: 'shop' },
-					{ name: 'Learn More', value: 'learn_more' },
 					{ name: 'Sign Up', value: 'signup' },
-					{ name: 'Call', value: 'call' },
 				],
 				displayOptions: {
 					show: {
@@ -529,13 +529,13 @@ export class Buffer implements INodeType {
 				name: 'googleEventButton',
 				type: 'options',
 				options: [
-					{ name: 'None', value: 'none' },
 					{ name: 'Book', value: 'book' },
+					{ name: 'Call', value: 'call' },
+					{ name: 'Learn More', value: 'learn_more' },
+					{ name: 'None', value: 'none' },
 					{ name: 'Order', value: 'order' },
 					{ name: 'Shop', value: 'shop' },
-					{ name: 'Learn More', value: 'learn_more' },
 					{ name: 'Sign Up', value: 'signup' },
-					{ name: 'Call', value: 'call' },
 				],
 				displayOptions: {
 					show: {
@@ -611,6 +611,38 @@ export class Buffer implements INodeType {
 				},
 				default: '',
 				description: 'Text for the first comment on the Facebook post',
+			},
+			{
+				displayName: 'Facebook Post Type',
+				name: 'facebookPostType',
+				type: 'options',
+				options: [
+					{
+						name: 'Post',
+						value: 'post',
+						description: 'A standard Facebook feed post',
+					},
+					{
+						name: 'Story',
+						value: 'story',
+						description: 'A Facebook story',
+					},
+					{
+						name: 'Reel',
+						value: 'reel',
+						description: 'A Facebook reel',
+					},
+				],
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['facebook_page', 'Facebook_Page', 'FACEBOOK_PAGE'],
+					},
+				},
+				default: 'post',
+				description: 'The type of Facebook post to create',
 			},
 			{
 				displayName: 'Link Attachment URL',
@@ -702,6 +734,109 @@ export class Buffer implements INodeType {
 				},
 				default: true,
 				description: 'Whether the post should also appear on your Instagram feed (relevant for reels and stories)',
+			},
+			// ----------------------------------
+			//         YouTube: Create fields
+			// ----------------------------------
+			{
+				displayName: 'Video Title',
+				name: 'youtubeTitle',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['youtube', 'YouTube', 'YOUTUBE'],
+					},
+				},
+				default: '',
+				description: 'The title of the YouTube video (required)',
+			},
+			{
+				displayName: 'Category',
+				name: 'youtubeCategoryId',
+				type: 'options',
+				options: [
+					{ name: 'Film & Animation', value: '1' },
+					{ name: 'Autos & Vehicles', value: '2' },
+					{ name: 'Music', value: '10' },
+					{ name: 'Pets & Animals', value: '15' },
+					{ name: 'Sports', value: '17' },
+					{ name: 'Short Movies', value: '18' },
+					{ name: 'Travel & Events', value: '19' },
+					{ name: 'Gaming', value: '20' },
+					{ name: 'Videoblogging', value: '21' },
+					{ name: 'People & Blogs', value: '22' },
+					{ name: 'Comedy', value: '23' },
+					{ name: 'Entertainment', value: '24' },
+					{ name: 'News & Politics', value: '25' },
+					{ name: 'Howto & Style', value: '26' },
+					{ name: 'Education', value: '27' },
+					{ name: 'Science & Technology', value: '28' },
+					{ name: 'Nonprofits & Activism', value: '29' },
+					{ name: 'Movies', value: '30' },
+					{ name: 'Anime/Animation', value: '31' },
+					{ name: 'Action/Adventure', value: '32' },
+					{ name: 'Classics', value: '33' },
+
+					{ name: 'Documentary', value: '35' },
+					{ name: 'Drama', value: '36' },
+					{ name: 'Family', value: '37' },
+					{ name: 'Foreign', value: '38' },
+					{ name: 'Horror', value: '39' },
+					{ name: 'Sci-Fi/Fantasy', value: '40' },
+					{ name: 'Thriller', value: '41' },
+					{ name: 'Shorts', value: '42' },
+					{ name: 'Shows', value: '43' },
+					{ name: 'Trailers', value: '44' },
+				],
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['youtube', 'YouTube', 'YOUTUBE'],
+					},
+				},
+				default: '22',
+				description: 'YouTube video category (required)',
+			},
+			{
+				displayName: 'Privacy Status',
+				name: 'youtubePrivacyStatus',
+				type: 'options',
+				options: [
+					{ name: 'Public', value: 'public' },
+					{ name: 'Private', value: 'private' },
+					{ name: 'Unlisted', value: 'unlisted' },
+				],
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['youtube', 'YouTube', 'YOUTUBE'],
+					},
+				},
+				default: 'public',
+				description: 'Privacy status of the video',
+			},
+			{
+				displayName: 'Tags',
+				name: 'youtubeTags',
+				type: 'string',
+				typeOptions: {
+					rows: 2,
+				},
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['youtube', 'YouTube', 'YOUTUBE'],
+					},
+				},
+				default: '',
+				description: 'Comma-separated list of tags for the video',
 			},
 			{
 				displayName: 'Attachment Type',
@@ -1118,6 +1253,20 @@ export class Buffer implements INodeType {
 							}
 
 							input.metadata = { google: googleMeta };
+						} else if (channelService && channelService.toLowerCase() === 'youtube') {
+							const youtubeTitle = this.getNodeParameter('youtubeTitle', i) as string;
+							const youtubeCategoryId = this.getNodeParameter('youtubeCategoryId', i) as string;
+							const youtubePrivacyStatus = this.getNodeParameter('youtubePrivacyStatus', i) as string;
+							const youtubeTags = this.getNodeParameter('youtubeTags', i) as string;
+							const youtubeMeta: IDataObject = {
+								title: youtubeTitle,
+								categoryId: youtubeCategoryId,
+								privacyStatus: youtubePrivacyStatus,
+							};
+							if (youtubeTags && youtubeTags.trim() !== '') {
+								youtubeMeta.tags = youtubeTags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag.length > 0);
+							}
+							input.metadata = { youtube: youtubeMeta };
 						}
 
 						// Add text if provided

@@ -1,19 +1,19 @@
 {
-	"name": "@bufferapp/n8n-nodes-buffer",
-	"version": "3.8.0",
-	"description": "n8n nodes for Buffer - Create and manage ideas and posts in your Buffer account",
+	"name": "@yorlandiscuba/n8n-nodes-buffer",
+	"version": "3.9.0",
+	"description": "n8n nodes for Buffer - Enhanced with Facebook Post Type and YouTube required fields (title, category, privacy, tags)",
 	"license": "MIT",
-	"homepage": "https://github.com/bufferapp/buffer-n8n",
+	"homepage": "https://github.com/yorlandiscuba/buffer-n8n",
 	"keywords": [
 		"n8n-community-node-package"
 	],
 	"author": {
-		"name": "Joe Birch",
-		"email": "joe@buffer.com"
+		"name": "Yorlandis Cuba",
+		"email": "yorlandis@example.com"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/bufferapp/buffer-n8n.git"
+		"url": "git+https://github.com/yorlandiscuba/buffer-n8n.git"
 	},
 	"scripts": {
 		"build": "n8n-node build",
