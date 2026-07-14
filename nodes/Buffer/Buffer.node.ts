@@ -696,7 +696,6 @@ export class Buffer implements INodeType {
 						description: 'A Facebook reel',
 					},
 				],
-				required: true,
 				displayOptions: {
 					show: {
 						resource: ['post'],
@@ -1321,6 +1320,16 @@ export class Buffer implements INodeType {
 							input.metadata = { instagram: instagramMeta };
 						} else if (channelService && ['facebook_page', 'facebook'].includes(channelService.toLowerCase())) {
 							const facebookPostType = this.getNodeParameter('facebookPostType', i) as string;
+
+							// Validate required Facebook fields
+							if (!facebookPostType || facebookPostType.trim() === '') {
+								throw new NodeOperationError(
+									this.getNode(),
+									'Facebook Post Type is required for Facebook posts',
+									{ itemIndex: i },
+								);
+							}
+
 							const facebookFirstComment = this.getNodeParameter('facebookFirstComment', i) as string;
 							const facebookLinkAttachment = this.getNodeParameter('facebookLinkAttachment', i) as string;
 							const facebookMeta: IDataObject = { type: facebookPostType };
