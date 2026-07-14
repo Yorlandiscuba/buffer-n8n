@@ -703,7 +703,7 @@ export class Buffer implements INodeType {
 						operation: ['create'],
 						channelId: [
 							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'facebook_page',
+								_filter: (value: string) => ['facebook_page', 'facebook'].includes(value?.split('|')[1]?.toLowerCase()),
 							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 						],
 					},
@@ -724,7 +724,7 @@ export class Buffer implements INodeType {
 						operation: ['create'],
 						channelId: [
 							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'facebook_page',
+								_filter: (value: string) => ['facebook_page', 'facebook'].includes(value?.split('|')[1]?.toLowerCase()),
 							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 						],
 					},
@@ -742,7 +742,7 @@ export class Buffer implements INodeType {
 						operation: ['create'],
 						channelId: [
 							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'facebook_page',
+								_filter: (value: string) => ['facebook_page', 'facebook'].includes(value?.split('|')[1]?.toLowerCase()),
 							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 						],
 					},
@@ -1319,7 +1319,7 @@ export class Buffer implements INodeType {
 							if (instagramFirstComment) instagramMeta.firstComment = instagramFirstComment;
 							if (instagramLink) instagramMeta.link = instagramLink;
 							input.metadata = { instagram: instagramMeta };
-						} else if (channelService && channelService.toLowerCase() === 'facebook_page') {
+						} else if (channelService && ['facebook_page', 'facebook'].includes(channelService.toLowerCase())) {
 							const facebookPostType = this.getNodeParameter('facebookPostType', i) as string;
 							const facebookFirstComment = this.getNodeParameter('facebookFirstComment', i) as string;
 							const facebookLinkAttachment = this.getNodeParameter('facebookLinkAttachment', i) as string;
