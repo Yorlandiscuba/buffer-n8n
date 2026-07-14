@@ -289,7 +289,7 @@ export class Buffer implements INodeType {
 							{
 								_filter: (value: string) => {
 									const service = value?.split('|')[1]?.toLowerCase();
-									return ['instagram', 'tiktok', 'youtube', 'facebook_group', 'facebook_page'].includes(service);
+									return ['instagram', 'tiktok', 'youtube', 'facebook_group', 'facebook_page', 'facebook'].includes(service);
 								},
 							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 						],
@@ -1295,7 +1295,7 @@ export class Buffer implements INodeType {
 						const postText = this.getNodeParameter('postText', i) as string;
 						const shareMode = this.getNodeParameter('shareMode', i) as string;
 						const attachmentType = this.getNodeParameter('attachmentType', i) as string;
-						const schedulingType = this.getNodeParameter('schedulingType', i) as string;
+						const schedulingType = this.getNodeParameter('schedulingType', i, 'automatic') as string;
 
 						// Build the input
 						const input: IDataObject = {
