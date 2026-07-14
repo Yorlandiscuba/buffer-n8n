@@ -613,38 +613,6 @@ export class Buffer implements INodeType {
 				description: 'Text for the first comment on the Facebook post',
 			},
 			{
-				displayName: 'Facebook Post Type',
-				name: 'facebookPostType',
-				type: 'options',
-				options: [
-					{
-						name: 'Post',
-						value: 'post',
-						description: 'A standard Facebook feed post',
-					},
-					{
-						name: 'Story',
-						value: 'story',
-						description: 'A Facebook story',
-					},
-					{
-						name: 'Reel',
-						value: 'reel',
-						description: 'A Facebook reel',
-					},
-				],
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelService: ['facebook_page', 'Facebook_Page', 'FACEBOOK_PAGE'],
-					},
-				},
-				default: 'post',
-				description: 'The type of Facebook post to create',
-			},
-			{
 				displayName: 'Link Attachment URL',
 				name: 'facebookLinkAttachment',
 				type: 'string',
@@ -742,7 +710,6 @@ export class Buffer implements INodeType {
 				displayName: 'Video Title',
 				name: 'youtubeTitle',
 				type: 'string',
-				required: true,
 				displayOptions: {
 					show: {
 						resource: ['post'],
@@ -751,7 +718,7 @@ export class Buffer implements INodeType {
 					},
 				},
 				default: '',
-				description: 'The title of the YouTube video (required)',
+				description: 'The title of the YouTube video (required for YouTube posts)',
 			},
 			{
 				displayName: 'Category',
@@ -791,7 +758,6 @@ export class Buffer implements INodeType {
 					{ name: 'Shows', value: '43' },
 					{ name: 'Trailers', value: '44' },
 				],
-				required: true,
 				displayOptions: {
 					show: {
 						resource: ['post'],
@@ -1258,6 +1224,23 @@ export class Buffer implements INodeType {
 							const youtubeCategoryId = this.getNodeParameter('youtubeCategoryId', i) as string;
 							const youtubePrivacyStatus = this.getNodeParameter('youtubePrivacyStatus', i) as string;
 							const youtubeTags = this.getNodeParameter('youtubeTags', i) as string;
+
+							// Validate required YouTube fields
+							if (!youtubeTitle || youtubeTitle.trim() === '') {
+								throw new NodeOperationError(
+									this.getNode(),
+									'Video Title is required for YouTube posts',
+									{ itemIndex: i },
+								);
+							}
+							if (!youtubeCategoryId) {
+								throw new NodeOperationError(
+									this.getNode(),
+									'Category is required for YouTube posts',
+									{ itemIndex: i },
+								);
+							}
+
 							const youtubeMeta: IDataObject = {
 								title: youtubeTitle,
 								categoryId: youtubeCategoryId,
