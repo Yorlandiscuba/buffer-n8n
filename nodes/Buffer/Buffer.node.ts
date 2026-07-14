@@ -265,7 +265,7 @@ export class Buffer implements INodeType {
 				default: '',
 				description: 'The date and time to publish the post. Example: 2026-03-26T10:28:47.545Z.',
 			},
-			{
+{
 				displayName: 'Scheduling Mode',
 				name: 'schedulingType',
 				type: 'options',
@@ -285,7 +285,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['instagram', 'tiktok', 'youtube', 'Instagram', 'TikTok', 'YouTube', 'INSTAGRAM', 'TIKTOK', 'YOUTUBE', 'facebook_group', 'Facebook_Group', 'FACEBOOK_GROUP'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return ['instagram', 'tiktok', 'youtube', 'facebook_group'].includes(service);
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: 'automatic',
@@ -317,7 +324,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: 'whats_new',
@@ -343,7 +357,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['whats_new'],
 					},
 				},
@@ -358,7 +379,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['whats_new'],
 					},
 				},
@@ -376,7 +404,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['offer'],
 					},
 				},
@@ -391,7 +426,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['offer'],
 					},
 				},
@@ -406,7 +448,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['offer'],
 					},
 				},
@@ -421,7 +470,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['offer'],
 					},
 				},
@@ -436,7 +492,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['offer'],
 					},
 				},
@@ -454,7 +517,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['offer'],
 					},
 				},
@@ -472,7 +542,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['event'],
 					},
 				},
@@ -487,7 +564,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['event'],
 					},
 				},
@@ -502,7 +586,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['event'],
 					},
 				},
@@ -517,7 +608,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['event'],
 					},
 				},
@@ -541,7 +639,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['event'],
 					},
 				},
@@ -556,7 +661,14 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['google', 'Google', 'GOOGLE', 'googlebusiness', 'GoogleBusiness', 'GOOGLEBUSINESS', 'google_business', 'Google_Business', 'GOOGLE_BUSINESS'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									const service = value?.split('|')[1]?.toLowerCase();
+									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 						googlePostType: ['event'],
 					},
 				},
@@ -589,7 +701,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['facebook_page', 'Facebook_Page', 'FACEBOOK_PAGE'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'facebook_page',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: 'post',
@@ -606,7 +722,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['facebook_page', 'Facebook_Page', 'FACEBOOK_PAGE'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'facebook_page',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: '',
@@ -620,7 +740,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['facebook_page', 'Facebook_Page', 'FACEBOOK_PAGE'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'facebook_page',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: '',
@@ -652,7 +776,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['instagram', 'Instagram', 'INSTAGRAM'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'instagram',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: 'post',
@@ -669,7 +797,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['instagram', 'Instagram', 'INSTAGRAM'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'instagram',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: '',
@@ -683,7 +815,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['instagram', 'Instagram', 'INSTAGRAM'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'instagram',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: '',
@@ -697,7 +833,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['instagram', 'Instagram', 'INSTAGRAM'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'instagram',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: true,
@@ -714,7 +854,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['youtube', 'YouTube', 'YOUTUBE'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'youtube',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: '',
@@ -762,7 +906,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['youtube', 'YouTube', 'YOUTUBE'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'youtube',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: '22',
@@ -781,7 +929,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['youtube', 'YouTube', 'YOUTUBE'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'youtube',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: 'public',
@@ -798,7 +950,11 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelService: ['youtube', 'YouTube', 'YOUTUBE'],
+						channelId: [
+							{
+								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'youtube',
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				default: '',
