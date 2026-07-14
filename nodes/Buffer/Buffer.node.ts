@@ -84,8 +84,20 @@ export class Buffer implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				displayOptions: {
-					show: {
+show: {
 						resource: ['post'],
+						operation: ['create'],
+channelId: [
+							{
+								_filter: (value: string) => {
+									if (!value) return false;
+									const parts = value.split('|');
+									if (parts.length < 2) return false;
+									const service = parts[1].trim().toLowerCase();
+									return ['facebook_page', 'facebook', 'facebookpage'].includes(service);
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
 					},
 				},
 				options: [
@@ -702,13 +714,38 @@ export class Buffer implements INodeType {
 						operation: ['create'],
 						channelId: [
 							{
-								_filter: (value: string) => ['facebook_page', 'facebook'].includes(value?.split('|')[1]?.toLowerCase()),
+								_filter: (value: string) => ['facebook_page', 'facebook', 'facebookpage'].includes(value?.split('|')[1]?.toLowerCase()),
 							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 						],
 					},
 				},
 				default: 'post',
 				description: 'The type of Facebook post to create',
+			},
+			{
+				displayName: 'Reel Title',
+				name: 'facebookReelTitle',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelId: [
+							{
+								_filter: (value: string) => {
+									if (!value) return false;
+									const parts = value.split('|');
+									if (parts.length < 2) return false;
+									const service = parts[1].trim().toLowerCase();
+									return ['facebook_page', 'facebook', 'facebookpage'].includes(service);
+								},
+							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+						],
+						facebookPostType: ['reel'],
+					},
+				},
+				default: '',
+				description: 'Title of the Facebook Reel (required for Reel posts)',
 			},
 			{
 				displayName: 'First Comment',
@@ -723,7 +760,13 @@ export class Buffer implements INodeType {
 						operation: ['create'],
 						channelId: [
 							{
-								_filter: (value: string) => ['facebook_page', 'facebook'].includes(value?.split('|')[1]?.toLowerCase()),
+								_filter: (value: string) => {
+									if (!value) return false;
+									const parts = value.split('|');
+									if (parts.length < 2) return false;
+									const service = parts[1].trim().toLowerCase();
+									return ['facebook_page', 'facebook', 'facebookpage'].includes(service);
+								},
 							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 						],
 					},
@@ -739,9 +782,15 @@ export class Buffer implements INodeType {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
+channelId: [
 							{
-								_filter: (value: string) => ['facebook_page', 'facebook'].includes(value?.split('|')[1]?.toLowerCase()),
+								_filter: (value: string) => {
+									if (!value) return false;
+									const parts = value.split('|');
+									if (parts.length < 2) return false;
+									const service = parts[1].trim().toLowerCase();
+									return ['facebook_page', 'facebook', 'facebookpage'].includes(service);
+								},
 							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 						],
 					},
@@ -1305,7 +1354,7 @@ export class Buffer implements INodeType {
 						};
 
 						// Add channel-specific post type metadata
-						const channelService = channelIdComposite.split('|')[1];
+						const channelService = channelIdComposite.split('|')[1]?.trim();
 						if (channelService && channelService.toLowerCase() === 'instagram') {
 							const instagramPostType = this.getNodeParameter('instagramPostType', i) as string;
 							const shouldShareToFeed = this.getNodeParameter('instagramShareToFeed', i) as boolean;
@@ -1318,7 +1367,7 @@ export class Buffer implements INodeType {
 							if (instagramFirstComment) instagramMeta.firstComment = instagramFirstComment;
 							if (instagramLink) instagramMeta.link = instagramLink;
 							input.metadata = { instagram: instagramMeta };
-						} else if (channelService && ['facebook_page', 'facebook'].includes(channelService.toLowerCase())) {
+						} else if (channelService && ['facebook_page', 'facebook', 'facebookpage'].includes(channelService.toLowerCase())) {
 							const facebookPostType = this.getNodeParameter('facebookPostType', i) as string;
 
 							// Validate required Facebook fields
@@ -1332,9 +1381,19 @@ export class Buffer implements INodeType {
 
 							const facebookFirstComment = this.getNodeParameter('facebookFirstComment', i) as string;
 							const facebookLinkAttachment = this.getNodeParameter('facebookLinkAttachment', i) as string;
+							const facebookReelTitle = this.getNodeParameter('facebookReelTitle', i) as string;
 							const facebookMeta: IDataObject = { type: facebookPostType };
 							if (facebookFirstComment) facebookMeta.firstComment = facebookFirstComment;
-							if (facebookLinkAttachment) facebookMeta.linkAttachment = { url: facebookLinkAttachment };
+							if (facebookLinkAttachment) {
+								facebookMeta.linkAttachment = {
+									url: facebookLinkAttachment,
+									text: postText || '',
+									title: facebookReelTitle || (facebookPostType === 'reel' ? 'Facebook Reel' : 'Facebook Post'),
+								};
+							}
+							if (facebookReelTitle && facebookPostType === 'reel') {
+								facebookMeta.title = facebookReelTitle;
+							}
 							input.metadata = { facebook: facebookMeta };
 						} else if (channelService && ['google', 'googlebusiness', 'google_business'].includes(channelService.toLowerCase())) {
 							const googlePostType = this.getNodeParameter('googlePostType', i) as string;
@@ -1410,6 +1469,7 @@ export class Buffer implements INodeType {
 								title: youtubeTitle,
 								categoryId: youtubeCategoryId,
 								privacyStatus: youtubePrivacyStatus,
+								defaultToReminders: false,
 							};
 							if (youtubeTags && youtubeTags.trim() !== '') {
 								youtubeMeta.tags = youtubeTags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag.length > 0);
