@@ -289,7 +289,7 @@ export class Buffer implements INodeType {
 							{
 								_filter: (value: string) => {
 									const service = value?.split('|')[1]?.toLowerCase();
-									return ['instagram', 'tiktok', 'youtube', 'facebook_group'].includes(service);
+									return ['instagram', 'tiktok', 'youtube', 'facebook_group', 'facebook_page'].includes(service);
 								},
 							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 						],
