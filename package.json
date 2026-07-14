@@ -1,6 +1,6 @@
 {
 	"name": "@yorlandiscuba/n8n-nodes-buffer",
-	"version": "3.8.8",
+	"version": "3.8.9",
 	"description": "n8n nodes for Buffer - Enhanced with Facebook Post Type and YouTube required fields (title, category, privacy, tags)",
 	"license": "MIT",
 	"homepage": "https://github.com/yorlandiscuba/buffer-n8n",
