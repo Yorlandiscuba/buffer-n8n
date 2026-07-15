@@ -1167,6 +1167,29 @@ export class Buffer implements INodeType {
 							assets: [],
 						};
 
+						// Platform-level asset requirements — validate before hitting the API
+						if (channelService === 'instagram' && attachmentType === 'none') {
+							throw new NodeOperationError(
+								this.getNode(),
+								'Instagram posts require at least one image or video. Set Attachment Type to Image or Video.',
+								{ itemIndex: i },
+							);
+						}
+						if (channelService === 'tiktok' && attachmentType !== 'video') {
+							throw new NodeOperationError(
+								this.getNode(),
+								'TikTok posts require a video. Set Attachment Type to Video.',
+								{ itemIndex: i },
+							);
+						}
+						if (channelService === 'youtube' && attachmentType !== 'video') {
+							throw new NodeOperationError(
+								this.getNode(),
+								'YouTube posts require a video. Set Attachment Type to Video.',
+								{ itemIndex: i },
+							);
+						}
+
 						// Build platform-specific metadata
 						if (channelService === 'instagram') {
 							const instagramPostType = this.getNodeParameter('instagramPostType', i) as string;
