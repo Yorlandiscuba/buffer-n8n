@@ -1189,18 +1189,19 @@ export class Buffer implements INodeType {
 							}
 							const facebookFirstComment = this.getNodeParameter('facebookFirstComment', i) as string;
 							const facebookLinkAttachment = this.getNodeParameter('facebookLinkAttachment', i) as string;
-							const facebookReelTitle = this.getNodeParameter('facebookReelTitle', i) as string;
 							const facebookMeta: IDataObject = { type: facebookPostType };
 							if (facebookFirstComment) facebookMeta.firstComment = facebookFirstComment;
 							if (facebookLinkAttachment) {
 								facebookMeta.linkAttachment = {
 									url: facebookLinkAttachment,
 									text: postText || '',
-									title: facebookReelTitle || (facebookPostType === 'reel' ? 'Facebook Reel' : 'Facebook Post'),
+									title: 'Facebook Post',
 								};
 							}
-							if (facebookReelTitle && facebookPostType === 'reel') {
-								facebookMeta.title = facebookReelTitle;
+							// reelTitle is only present in the UI (and relevant to the API) when type === 'reel'
+							if (facebookPostType === 'reel') {
+								const facebookReelTitle = this.getNodeParameter('facebookReelTitle', i, '') as string;
+								if (facebookReelTitle) facebookMeta.title = facebookReelTitle;
 							}
 							input.metadata = { facebook: facebookMeta };
 
