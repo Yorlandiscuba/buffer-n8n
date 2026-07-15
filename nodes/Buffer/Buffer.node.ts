@@ -1194,8 +1194,6 @@ export class Buffer implements INodeType {
 							if (facebookLinkAttachment) {
 								facebookMeta.linkAttachment = {
 									url: facebookLinkAttachment,
-									text: postText || '',
-									title: 'Facebook Post',
 								};
 							}
 							// reelTitle is only present in the UI (and relevant to the API) when type === 'reel'
