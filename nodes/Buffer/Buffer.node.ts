@@ -84,20 +84,8 @@ export class Buffer implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				displayOptions: {
-show: {
+					show: {
 						resource: ['post'],
-						operation: ['create'],
-channelId: [
-							{
-								_filter: (value: string) => {
-									if (!value) return false;
-									const parts = value.split('|');
-									if (parts.length < 2) return false;
-									const service = parts[1].trim().toLowerCase();
-									return ['facebook_page', 'facebook', 'facebookpage'].includes(service);
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
 					},
 				},
 				options: [
@@ -197,18 +185,25 @@ channelId: [
 				default: '',
 				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
+			// channelService: populated automatically from channelId via expression.
+			// Used by displayOptions below to show platform-specific fields.
+			// The value format from getChannels is "channelId|service", so we extract the service part.
 			{
 				displayName: 'Channel Service',
 				name: 'channelService',
-				type: 'hidden',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getChannelServices',
+					loadOptionsDependsOn: ['organizationId'],
+				},
 				displayOptions: {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
 					},
 				},
-				default: '={{ $parameter["channelId"].split("|")[1] }}',
-				description: 'The service type of the selected channel (auto-populated)',
+				default: '',
+				description: 'The platform of the selected channel (auto-populated — do not change)',
 			},
 			{
 				displayName: 'Text',
@@ -277,7 +272,7 @@ channelId: [
 				default: '',
 				description: 'The date and time to publish the post. Example: 2026-03-26T10:28:47.545Z.',
 			},
-{
+			{
 				displayName: 'Scheduling Mode',
 				name: 'schedulingType',
 				type: 'options',
@@ -297,396 +292,15 @@ channelId: [
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return ['instagram', 'tiktok', 'youtube', 'facebook_group', 'facebook_page', 'facebook'].includes(service);
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['instagram', 'tiktok', 'youtube', 'facebook_group', 'facebook_page', 'facebook'],
 					},
 				},
 				default: 'automatic',
 				description: 'How the post should be scheduled',
 			},
-			{
-				displayName: 'Google Business Post Type',
-				name: 'googlePostType',
-				type: 'options',
-				options: [
-					{
-						name: "What's New",
-						value: 'whats_new',
-						description: 'A standard Google Business post',
-					},
-					{
-						name: 'Offer',
-						value: 'offer',
-						description: 'A Google Business offer',
-					},
-					{
-						name: 'Event',
-						value: 'event',
-						description: 'A Google Business event',
-					},
-				],
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-					},
-				},
-				default: 'whats_new',
-				description: 'The type of Google Business post to create',
-			},
 			// ----------------------------------
-			//   Google Business: What's New fields
+			//   Facebook fields
 			// ----------------------------------
-			{
-				displayName: 'Action Button',
-				name: 'googleWhatsNewButton',
-				type: 'options',
-				options: [
-					{ name: 'Book', value: 'book' },
-					{ name: 'Call', value: 'call' },
-					{ name: 'Learn More', value: 'learn_more' },
-					{ name: 'None', value: 'none' },
-					{ name: 'Order', value: 'order' },
-					{ name: 'Shop', value: 'shop' },
-					{ name: 'Sign Up', value: 'signup' },
-				],
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['whats_new'],
-					},
-				},
-				default: 'none',
-				description: 'The call-to-action button for the post',
-			},
-			{
-				displayName: 'Action Button Link',
-				name: 'googleWhatsNewLink',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['whats_new'],
-					},
-				},
-				default: '',
-				description: 'URL for the action button',
-			},
-			// ----------------------------------
-			//   Google Business: Offer fields
-			// ----------------------------------
-			{
-				displayName: 'Offer Title',
-				name: 'googleOfferTitle',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['offer'],
-					},
-				},
-				default: '',
-				description: 'Title of the offer',
-			},
-			{
-				displayName: 'Offer Start Date',
-				name: 'googleOfferStartDate',
-				type: 'dateTime',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['offer'],
-					},
-				},
-				default: '',
-				description: 'Start date of the offer',
-			},
-			{
-				displayName: 'Offer End Date',
-				name: 'googleOfferEndDate',
-				type: 'dateTime',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['offer'],
-					},
-				},
-				default: '',
-				description: 'End date of the offer',
-			},
-			{
-				displayName: 'Coupon Code',
-				name: 'googleOfferCode',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['offer'],
-					},
-				},
-				default: '',
-				description: 'Coupon code for the offer',
-			},
-			{
-				displayName: 'Offer Link',
-				name: 'googleOfferLink',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['offer'],
-					},
-				},
-				default: '',
-				description: 'Link to the offer',
-			},
-			{
-				displayName: 'Terms & Conditions',
-				name: 'googleOfferTerms',
-				type: 'string',
-				typeOptions: {
-					rows: 3,
-				},
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['offer'],
-					},
-				},
-				default: '',
-				description: 'Terms and conditions of the offer',
-			},
-			// ----------------------------------
-			//   Google Business: Event fields
-			// ----------------------------------
-			{
-				displayName: 'Event Title',
-				name: 'googleEventTitle',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['event'],
-					},
-				},
-				default: '',
-				description: 'Title of the event',
-			},
-			{
-				displayName: 'Event Start Date',
-				name: 'googleEventStartDate',
-				type: 'dateTime',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['event'],
-					},
-				},
-				default: '',
-				description: 'Start date of the event',
-			},
-			{
-				displayName: 'Event End Date',
-				name: 'googleEventEndDate',
-				type: 'dateTime',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['event'],
-					},
-				},
-				default: '',
-				description: 'End date of the event',
-			},
-			{
-				displayName: 'Full Day Event',
-				name: 'googleEventIsFullDay',
-				type: 'boolean',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['event'],
-					},
-				},
-				default: false,
-				description: 'Whether the event is a full day event (no specific start/end time)',
-			},
-			{
-				displayName: 'Action Button',
-				name: 'googleEventButton',
-				type: 'options',
-				options: [
-					{ name: 'Book', value: 'book' },
-					{ name: 'Call', value: 'call' },
-					{ name: 'Learn More', value: 'learn_more' },
-					{ name: 'None', value: 'none' },
-					{ name: 'Order', value: 'order' },
-					{ name: 'Shop', value: 'shop' },
-					{ name: 'Sign Up', value: 'signup' },
-				],
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['event'],
-					},
-				},
-				default: 'none',
-				description: 'The call-to-action button for the event',
-			},
-			{
-				displayName: 'Action Button Link',
-				name: 'googleEventLink',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									const service = value?.split('|')[1]?.toLowerCase();
-									return service === 'google' || service === 'googlebusiness' || service === 'google_business';
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
-						googlePostType: ['event'],
-					},
-				},
-				default: '',
-				description: 'URL for the action button',
-			},
 			{
 				displayName: 'Facebook Post Type',
 				name: 'facebookPostType',
@@ -708,15 +322,12 @@ channelId: [
 						description: 'A Facebook reel',
 					},
 				],
+				required: true,
 				displayOptions: {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => ['facebook_page', 'facebook', 'facebookpage'].includes(value?.split('|')[1]?.toLowerCase()),
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['facebook_page', 'facebook', 'facebookpage'],
 					},
 				},
 				default: 'post',
@@ -730,17 +341,7 @@ channelId: [
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									if (!value) return false;
-									const parts = value.split('|');
-									if (parts.length < 2) return false;
-									const service = parts[1].trim().toLowerCase();
-									return ['facebook_page', 'facebook', 'facebookpage'].includes(service);
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['facebook_page', 'facebook', 'facebookpage'],
 						facebookPostType: ['reel'],
 					},
 				},
@@ -758,17 +359,7 @@ channelId: [
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => {
-									if (!value) return false;
-									const parts = value.split('|');
-									if (parts.length < 2) return false;
-									const service = parts[1].trim().toLowerCase();
-									return ['facebook_page', 'facebook', 'facebookpage'].includes(service);
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['facebook_page', 'facebook', 'facebookpage'],
 					},
 				},
 				default: '',
@@ -782,22 +373,15 @@ channelId: [
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-channelId: [
-							{
-								_filter: (value: string) => {
-									if (!value) return false;
-									const parts = value.split('|');
-									if (parts.length < 2) return false;
-									const service = parts[1].trim().toLowerCase();
-									return ['facebook_page', 'facebook', 'facebookpage'].includes(service);
-								},
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['facebook_page', 'facebook', 'facebookpage'],
 					},
 				},
 				default: '',
 				description: 'URL for a link preview attachment. Mutually exclusive with video assets.',
 			},
+			// ----------------------------------
+			//   Instagram fields
+			// ----------------------------------
 			{
 				displayName: 'Instagram Post Type',
 				name: 'instagramPostType',
@@ -824,11 +408,7 @@ channelId: [
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'instagram',
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['instagram'],
 					},
 				},
 				default: 'post',
@@ -845,11 +425,7 @@ channelId: [
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'instagram',
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['instagram'],
 					},
 				},
 				default: '',
@@ -863,11 +439,7 @@ channelId: [
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'instagram',
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['instagram'],
 					},
 				},
 				default: '',
@@ -881,32 +453,25 @@ channelId: [
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'instagram',
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['instagram'],
 					},
 				},
 				default: true,
 				description: 'Whether the post should also appear on your Instagram feed (relevant for reels and stories)',
 			},
 			// ----------------------------------
-			//         YouTube: Create fields
+			//         YouTube fields
 			// ----------------------------------
 			{
 				displayName: 'Video Title',
 				name: 'youtubeTitle',
 				type: 'string',
+				required: true,
 				displayOptions: {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'youtube',
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['youtube'],
 					},
 				},
 				default: '',
@@ -938,7 +503,6 @@ channelId: [
 					{ name: 'Anime/Animation', value: '31' },
 					{ name: 'Action/Adventure', value: '32' },
 					{ name: 'Classics', value: '33' },
-
 					{ name: 'Documentary', value: '35' },
 					{ name: 'Drama', value: '36' },
 					{ name: 'Family', value: '37' },
@@ -950,15 +514,12 @@ channelId: [
 					{ name: 'Shows', value: '43' },
 					{ name: 'Trailers', value: '44' },
 				],
+				required: true,
 				displayOptions: {
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'youtube',
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['youtube'],
 					},
 				},
 				default: '22',
@@ -977,11 +538,7 @@ channelId: [
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'youtube',
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['youtube'],
 					},
 				},
 				default: 'public',
@@ -998,16 +555,281 @@ channelId: [
 					show: {
 						resource: ['post'],
 						operation: ['create'],
-						channelId: [
-							{
-								_filter: (value: string) => value?.split('|')[1]?.toLowerCase() === 'youtube',
-							} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-						],
+						channelService: ['youtube'],
 					},
 				},
 				default: '',
 				description: 'Comma-separated list of tags for the video',
 			},
+			// ----------------------------------
+			//   Google Business fields
+			// ----------------------------------
+			{
+				displayName: 'Google Business Post Type',
+				name: 'googlePostType',
+				type: 'options',
+				options: [
+					{
+						name: "What's New",
+						value: 'whats_new',
+						description: 'A standard Google Business post',
+					},
+					{
+						name: 'Offer',
+						value: 'offer',
+						description: 'A Google Business offer',
+					},
+					{
+						name: 'Event',
+						value: 'event',
+						description: 'A Google Business event',
+					},
+				],
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+					},
+				},
+				default: 'whats_new',
+				description: 'The type of Google Business post to create',
+			},
+			{
+				displayName: 'Action Button',
+				name: 'googleWhatsNewButton',
+				type: 'options',
+				options: [
+					{ name: 'Book', value: 'book' },
+					{ name: 'Call', value: 'call' },
+					{ name: 'Learn More', value: 'learn_more' },
+					{ name: 'None', value: 'none' },
+					{ name: 'Order', value: 'order' },
+					{ name: 'Shop', value: 'shop' },
+					{ name: 'Sign Up', value: 'signup' },
+				],
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['whats_new'],
+					},
+				},
+				default: 'none',
+				description: 'The call-to-action button for the post',
+			},
+			{
+				displayName: 'Action Button Link',
+				name: 'googleWhatsNewLink',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['whats_new'],
+					},
+				},
+				default: '',
+				description: 'URL for the action button',
+			},
+			{
+				displayName: 'Offer Title',
+				name: 'googleOfferTitle',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'Title of the offer',
+			},
+			{
+				displayName: 'Offer Start Date',
+				name: 'googleOfferStartDate',
+				type: 'dateTime',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'Start date of the offer',
+			},
+			{
+				displayName: 'Offer End Date',
+				name: 'googleOfferEndDate',
+				type: 'dateTime',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'End date of the offer',
+			},
+			{
+				displayName: 'Coupon Code',
+				name: 'googleOfferCode',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'Coupon code for the offer',
+			},
+			{
+				displayName: 'Offer Link',
+				name: 'googleOfferLink',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'Link to the offer',
+			},
+			{
+				displayName: 'Terms & Conditions',
+				name: 'googleOfferTerms',
+				type: 'string',
+				typeOptions: {
+					rows: 3,
+				},
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['offer'],
+					},
+				},
+				default: '',
+				description: 'Terms and conditions of the offer',
+			},
+			{
+				displayName: 'Event Title',
+				name: 'googleEventTitle',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['event'],
+					},
+				},
+				default: '',
+				description: 'Title of the event',
+			},
+			{
+				displayName: 'Event Start Date',
+				name: 'googleEventStartDate',
+				type: 'dateTime',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['event'],
+					},
+				},
+				default: '',
+				description: 'Start date of the event',
+			},
+			{
+				displayName: 'Event End Date',
+				name: 'googleEventEndDate',
+				type: 'dateTime',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['event'],
+					},
+				},
+				default: '',
+				description: 'End date of the event',
+			},
+			{
+				displayName: 'Full Day Event',
+				name: 'googleEventIsFullDay',
+				type: 'boolean',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['event'],
+					},
+				},
+				default: false,
+				description: 'Whether the event is a full day event (no specific start/end time)',
+			},
+			{
+				displayName: 'Action Button',
+				name: 'googleEventButton',
+				type: 'options',
+				options: [
+					{ name: 'Book', value: 'book' },
+					{ name: 'Call', value: 'call' },
+					{ name: 'Learn More', value: 'learn_more' },
+					{ name: 'None', value: 'none' },
+					{ name: 'Order', value: 'order' },
+					{ name: 'Shop', value: 'shop' },
+					{ name: 'Sign Up', value: 'signup' },
+				],
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['event'],
+					},
+				},
+				default: 'none',
+				description: 'The call-to-action button for the event',
+			},
+			{
+				displayName: 'Action Button Link',
+				name: 'googleEventLink',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create'],
+						channelService: ['google', 'googlebusiness', 'google_business'],
+						googlePostType: ['event'],
+					},
+				},
+				default: '',
+				description: 'URL for the action button',
+			},
+			// ----------------------------------
+			//   Attachment fields
+			// ----------------------------------
 			{
 				displayName: 'Attachment Type',
 				name: 'attachmentType',
@@ -1038,9 +860,6 @@ channelId: [
 				default: 'none',
 				description: 'Type of attachment to add to the post',
 			},
-			// ----------------------------------
-			//         Post: Create - Images
-			// ----------------------------------
 			{
 				displayName: 'Image URL',
 				name: 'imageUrl',
@@ -1084,9 +903,6 @@ channelId: [
 				default: '',
 				description: 'Optional URL for a thumbnail version of the image',
 			},
-			// ----------------------------------
-			//         Post: Create - Videos
-			// ----------------------------------
 			{
 				displayName: 'Video URL',
 				name: 'videoUrl',
@@ -1139,15 +955,12 @@ channelId: [
 				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'bufferApi', {
 					method: 'POST' as IHttpRequestMethods,
 					url: apiUrl,
-					headers: {
-						'Content-Type': 'application/json',
-					},
+					headers: { 'Content-Type': 'application/json' },
 					body: { query },
 					json: true,
 				});
 
 				const organizations = response.data?.account?.organizations || [];
-
 				return organizations.map((org: { id: string; name: string }) => ({
 					name: org.name,
 					value: org.id,
@@ -1159,9 +972,7 @@ channelId: [
 				const apiUrl = (credentials.apiUrl as string) || 'https://api.buffer.com/graphql';
 				const organizationId = this.getNodeParameter('organizationId') as string;
 
-				if (!organizationId) {
-					return [];
-				}
+				if (!organizationId) return [];
 
 				const query = `
 					query GetChannels($input: ChannelsInput!) {
@@ -1178,18 +989,11 @@ channelId: [
 				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'bufferApi', {
 					method: 'POST' as IHttpRequestMethods,
 					url: apiUrl,
-					headers: {
-						'Content-Type': 'application/json',
-					},
+					headers: { 'Content-Type': 'application/json' },
 					body: {
 						query,
 						variables: {
-							input: {
-								organizationId,
-								filter: {
-									isLocked: false,
-								},
-							},
+							input: { organizationId, filter: { isLocked: false } },
 						},
 					},
 					json: true,
@@ -1197,17 +1001,65 @@ channelId: [
 
 				const channels = response.data?.channels || [];
 
-				// Show all channels, marking disconnected ones so users can see they need reconnecting
-				// Store value as "id|service" to enable conditional field display
-				return channels
-					.map((channel: { id: string; name: string; service: string; isDisconnected: boolean }) => ({
-						name: channel.isDisconnected
-							? `${channel.name} (${channel.service}) (Disconnected)`
-							: `${channel.name} (${channel.service})`,
-						value: channel.isDisconnected
-							? `${channel.id}|${channel.service}|disconnected`
-							: `${channel.id}|${channel.service}`,
-					}));
+				// Value format: "channelId|service" — service is used by channelService loadOptions
+				return channels.map((channel: { id: string; name: string; service: string; isDisconnected: boolean }) => ({
+					name: channel.isDisconnected
+						? `${channel.name} (${channel.service}) (Disconnected)`
+						: `${channel.name} (${channel.service})`,
+					value: channel.isDisconnected
+						? `${channel.id}|${channel.service}|disconnected`
+						: `${channel.id}|${channel.service}`,
+				}));
+			},
+
+			// Returns a list where value = service name (lowercase).
+			// This mirrors getChannels but with service as the option value,
+			// so that displayOptions can filter on channelService: ['instagram'] etc.
+			async getChannelServices(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('bufferApi');
+				const apiUrl = (credentials.apiUrl as string) || 'https://api.buffer.com/graphql';
+				const organizationId = this.getNodeParameter('organizationId') as string;
+
+				if (!organizationId) return [];
+
+				const query = `
+					query GetChannels($input: ChannelsInput!) {
+						channels(input: $input) {
+							id
+							name
+							service
+							isLocked
+							isDisconnected
+						}
+					}
+				`;
+
+				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'bufferApi', {
+					method: 'POST' as IHttpRequestMethods,
+					url: apiUrl,
+					headers: { 'Content-Type': 'application/json' },
+					body: {
+						query,
+						variables: {
+							input: { organizationId, filter: { isLocked: false } },
+						},
+					},
+					json: true,
+				});
+
+				const channels = response.data?.channels || [];
+
+				// De-duplicate by service so the user sees one entry per platform
+				const seen = new Set<string>();
+				const options: INodePropertyOptions[] = [];
+				for (const ch of channels as { id: string; name: string; service: string; isDisconnected: boolean }[]) {
+					const svc = ch.service.toLowerCase();
+					if (!seen.has(svc)) {
+						seen.add(svc);
+						options.push({ name: ch.service, value: svc });
+					}
+				}
+				return options;
 			},
 		},
 	};
@@ -1229,23 +1081,12 @@ channelId: [
 						const text = this.getNodeParameter('text', i) as string;
 						const title = this.getNodeParameter('title', i) as string;
 
-						// Build content input
 						const content: IDataObject = {};
+						if (text) content.text = text;
+						if (title) content.title = title;
 
-						if (text) {
-							content.text = text;
-						}
-						if (title) {
-							content.title = title;
-						}
+						const input: IDataObject = { organizationId, content };
 
-						// Build the input
-						const input: IDataObject = {
-							organizationId,
-							content,
-						};
-
-						// GraphQL mutation
 						const mutation = `
 							mutation CreateIdea($input: CreateIdeaInput!) {
 								createIdea(input: $input) {
@@ -1256,10 +1097,7 @@ channelId: [
 										position
 										createdAt
 										updatedAt
-										content {
-											title
-											text
-										}
+										content { title text }
 									}
 									... on IdeaResponse {
 										idea {
@@ -1269,68 +1107,42 @@ channelId: [
 											position
 											createdAt
 											updatedAt
-											content {
-												title
-												text
-											}
+											content { title text }
 										}
 										refreshIdeas
 									}
-									... on InvalidInputError {
-										message
-									}
-									... on UnauthorizedError {
-										message
-									}
-									... on UnexpectedError {
-										message
-									}
-									... on LimitReachedError {
-										message
-									}
+									... on InvalidInputError { message }
+									... on UnauthorizedError { message }
+									... on UnexpectedError { message }
+									... on LimitReachedError { message }
 								}
 							}
 						`;
 
-						const body = {
-							query: mutation,
-							variables: { input },
-						};
-
 						const response = await this.helpers.httpRequestWithAuthentication.call(this, 'bufferApi', {
 							method: 'POST' as IHttpRequestMethods,
 							url: apiUrl,
-							headers: {
-								'Content-Type': 'application/json',
-							},
-							body,
+							headers: { 'Content-Type': 'application/json' },
+							body: { query: mutation, variables: { input } },
 							json: true,
 						});
 
-						// Check for GraphQL errors
-						if (response.errors && response.errors.length > 0) {
+						if (response.errors?.length > 0) {
 							throw new NodeApiError(this.getNode(), response.errors[0], { itemIndex: i });
 						}
 
 						const result = response.data?.createIdea;
-
-						// Check for mutation-level errors
 						if (result?.message) {
 							throw new NodeApiError(this.getNode(), result, { itemIndex: i });
 						}
 
-						// Handle IdeaResponse wrapper
 						const idea = result?.idea || result;
-
-						returnData.push({
-							json: idea,
-							pairedItem: { item: i },
-						});
+						returnData.push({ json: idea, pairedItem: { item: i } });
 					}
 				} else if (resource === 'post') {
 					if (operation === 'create') {
 						const channelIdComposite = this.getNodeParameter('channelId', i) as string;
-						// Check if channel is disconnected (format: "id|service|disconnected")
+
 						if (channelIdComposite.endsWith('|disconnected')) {
 							throw new NodeOperationError(
 								this.getNode(),
@@ -1338,14 +1150,16 @@ channelId: [
 								{ itemIndex: i },
 							);
 						}
-						// Extract channel ID from composite value (format: "id|service")
+
+						// channelId format: "realId|service"
 						const channelId = channelIdComposite.split('|')[0];
+						const channelService = (channelIdComposite.split('|')[1] || '').trim().toLowerCase();
+
 						const postText = this.getNodeParameter('postText', i) as string;
 						const shareMode = this.getNodeParameter('shareMode', i) as string;
 						const attachmentType = this.getNodeParameter('attachmentType', i) as string;
 						const schedulingType = this.getNodeParameter('schedulingType', i, 'automatic') as string;
 
-						// Build the input
 						const input: IDataObject = {
 							channelId,
 							mode: shareMode,
@@ -1353,24 +1167,19 @@ channelId: [
 							assets: [],
 						};
 
-						// Add channel-specific post type metadata
-						const channelService = channelIdComposite.split('|')[1]?.trim();
-						if (channelService && channelService.toLowerCase() === 'instagram') {
+						// Build platform-specific metadata
+						if (channelService === 'instagram') {
 							const instagramPostType = this.getNodeParameter('instagramPostType', i) as string;
 							const shouldShareToFeed = this.getNodeParameter('instagramShareToFeed', i) as boolean;
 							const instagramFirstComment = this.getNodeParameter('instagramFirstComment', i) as string;
 							const instagramLink = this.getNodeParameter('instagramLink', i) as string;
-							const instagramMeta: IDataObject = {
-								type: instagramPostType,
-								shouldShareToFeed,
-							};
+							const instagramMeta: IDataObject = { type: instagramPostType, shouldShareToFeed };
 							if (instagramFirstComment) instagramMeta.firstComment = instagramFirstComment;
 							if (instagramLink) instagramMeta.link = instagramLink;
 							input.metadata = { instagram: instagramMeta };
-						} else if (channelService && ['facebook_page', 'facebook', 'facebookpage'].includes(channelService.toLowerCase())) {
-							const facebookPostType = this.getNodeParameter('facebookPostType', i) as string;
 
-							// Validate required Facebook fields
+						} else if (['facebook_page', 'facebook', 'facebookpage'].includes(channelService)) {
+							const facebookPostType = this.getNodeParameter('facebookPostType', i) as string;
 							if (!facebookPostType || facebookPostType.trim() === '') {
 								throw new NodeOperationError(
 									this.getNode(),
@@ -1378,7 +1187,6 @@ channelId: [
 									{ itemIndex: i },
 								);
 							}
-
 							const facebookFirstComment = this.getNodeParameter('facebookFirstComment', i) as string;
 							const facebookLinkAttachment = this.getNodeParameter('facebookLinkAttachment', i) as string;
 							const facebookReelTitle = this.getNodeParameter('facebookReelTitle', i) as string;
@@ -1395,7 +1203,8 @@ channelId: [
 								facebookMeta.title = facebookReelTitle;
 							}
 							input.metadata = { facebook: facebookMeta };
-						} else if (channelService && ['google', 'googlebusiness', 'google_business'].includes(channelService.toLowerCase())) {
+
+						} else if (['google', 'googlebusiness', 'google_business'].includes(channelService)) {
 							const googlePostType = this.getNodeParameter('googlePostType', i) as string;
 							const googleMeta: IDataObject = { type: googlePostType };
 
@@ -1413,7 +1222,6 @@ channelId: [
 								const code = this.getNodeParameter('googleOfferCode', i) as string;
 								const link = this.getNodeParameter('googleOfferLink', i) as string;
 								const terms = this.getNodeParameter('googleOfferTerms', i) as string;
-								if (title) googleMeta.title = title;
 								const details: IDataObject = {
 									title,
 									startDate: new Date(startDate).toISOString(),
@@ -1430,7 +1238,6 @@ channelId: [
 								const isFullDay = this.getNodeParameter('googleEventIsFullDay', i) as boolean;
 								const button = this.getNodeParameter('googleEventButton', i) as string;
 								const link = this.getNodeParameter('googleEventLink', i) as string;
-								if (title) googleMeta.title = title;
 								const details: IDataObject = {
 									title,
 									startDate: new Date(startDate).toISOString(),
@@ -1441,26 +1248,18 @@ channelId: [
 								if (link) details.link = link;
 								googleMeta.detailsEvent = details;
 							}
-
 							input.metadata = { google: googleMeta };
-						} else if (channelService && channelService.toLowerCase() === 'youtube') {
+
+						} else if (channelService === 'youtube') {
 							const youtubeTitle = this.getNodeParameter('youtubeTitle', i) as string;
 							const youtubeCategoryId = this.getNodeParameter('youtubeCategoryId', i) as string;
 							const youtubePrivacyStatus = this.getNodeParameter('youtubePrivacyStatus', i) as string;
 							const youtubeTags = this.getNodeParameter('youtubeTags', i) as string;
 
-							// Validate required YouTube fields
 							if (!youtubeTitle || youtubeTitle.trim() === '') {
 								throw new NodeOperationError(
 									this.getNode(),
 									'Video Title is required for YouTube posts',
-									{ itemIndex: i },
-								);
-							}
-							if (!youtubeCategoryId) {
-								throw new NodeOperationError(
-									this.getNode(),
-									'Category is required for YouTube posts',
 									{ itemIndex: i },
 								);
 							}
@@ -1477,152 +1276,51 @@ channelId: [
 							input.metadata = { youtube: youtubeMeta };
 						}
 
-						// Add text if provided
-						if (postText) {
-							input.text = postText;
-						}
+						if (postText) input.text = postText;
 
-						// Handle image attachments
+						// Attachments
 						if (attachmentType === 'image') {
 							const imageUrl = this.getNodeParameter('imageUrl', i) as string;
-
-							// Validate image URL
-							if (!imageUrl || imageUrl.trim() === '') {
-								throw new NodeApiError(
-									this.getNode(),
-									{ message: 'Image URL is required and cannot be empty' },
-									{ itemIndex: i },
-								);
+							if (!imageUrl?.trim()) {
+								throw new NodeApiError(this.getNode(), { message: 'Image URL is required' }, { itemIndex: i });
 							}
-
-							// Validate URL format
 							let parsedUrl: URL;
-							try {
-								parsedUrl = new URL(imageUrl);
-							} catch {
-								throw new NodeApiError(
-									this.getNode(),
-									{ message: `Invalid image URL format: "${imageUrl}" is not a valid URL` },
-									{ itemIndex: i },
-								);
+							try { parsedUrl = new URL(imageUrl); } catch {
+								throw new NodeApiError(this.getNode(), { message: `Invalid image URL: ${imageUrl}` }, { itemIndex: i });
 							}
-
 							if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-								throw new NodeApiError(
-									this.getNode(),
-									{ message: `Invalid image URL protocol: URL must use HTTP or HTTPS (got ${parsedUrl.protocol})` },
-									{ itemIndex: i },
-								);
+								throw new NodeApiError(this.getNode(), { message: 'Image URL must use HTTP or HTTPS' }, { itemIndex: i });
 							}
-
 							const imageInput: IDataObject = { url: imageUrl };
-
-							// Validate and add optional thumbnail URL
 							const imageThumbnailUrl = this.getNodeParameter('imageThumbnailUrl', i) as string;
-							if (imageThumbnailUrl && imageThumbnailUrl.trim() !== '') {
-								// Validate thumbnail URL format
-								let parsedThumbUrl: URL;
-								try {
-									parsedThumbUrl = new URL(imageThumbnailUrl);
-								} catch {
-									throw new NodeApiError(
-										this.getNode(),
-										{ message: `Invalid thumbnail URL format: "${imageThumbnailUrl}" is not a valid URL` },
-										{ itemIndex: i },
-									);
-								}
-
-								if (parsedThumbUrl.protocol !== 'http:' && parsedThumbUrl.protocol !== 'https:') {
-									throw new NodeApiError(
-										this.getNode(),
-										{ message: `Invalid thumbnail URL protocol: URL must use HTTP or HTTPS (got ${parsedThumbUrl.protocol})` },
-										{ itemIndex: i },
-									);
-								}
-
-								imageInput.thumbnailUrl = imageThumbnailUrl;
-							}
-
-							// Handle metadata (altText)
+							if (imageThumbnailUrl?.trim()) imageInput.thumbnailUrl = imageThumbnailUrl;
 							const imageAltText = this.getNodeParameter('imageAltText', i) as string;
-							if (imageAltText && imageAltText.trim() !== '') {
-								imageInput.metadata = {
-									altText: imageAltText,
-								};
-							}
-
+							if (imageAltText?.trim()) imageInput.metadata = { altText: imageAltText };
 							input.assets = [{ image: imageInput }];
+
 						} else if (attachmentType === 'video') {
 							const videoUrl = this.getNodeParameter('videoUrl', i) as string;
-
-							// Validate video URL
-							if (!videoUrl || videoUrl.trim() === '') {
-								throw new NodeApiError(
-									this.getNode(),
-									{ message: 'Video URL is required and cannot be empty' },
-									{ itemIndex: i },
-								);
+							if (!videoUrl?.trim()) {
+								throw new NodeApiError(this.getNode(), { message: 'Video URL is required' }, { itemIndex: i });
 							}
-
-							// Validate URL format
 							let parsedUrl: URL;
-							try {
-								parsedUrl = new URL(videoUrl);
-							} catch {
-								throw new NodeApiError(
-									this.getNode(),
-									{ message: `Invalid video URL format: "${videoUrl}" is not a valid URL` },
-									{ itemIndex: i },
-								);
+							try { parsedUrl = new URL(videoUrl); } catch {
+								throw new NodeApiError(this.getNode(), { message: `Invalid video URL: ${videoUrl}` }, { itemIndex: i });
 							}
-
 							if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-								throw new NodeApiError(
-									this.getNode(),
-									{ message: `Invalid video URL protocol: URL must use HTTP or HTTPS (got ${parsedUrl.protocol})` },
-									{ itemIndex: i },
-								);
+								throw new NodeApiError(this.getNode(), { message: 'Video URL must use HTTP or HTTPS' }, { itemIndex: i });
 							}
-
 							const videoInput: IDataObject = { url: videoUrl };
-
-							// Validate and add optional thumbnail URL
 							const videoThumbnailUrl = this.getNodeParameter('videoThumbnailUrl', i) as string;
-							if (videoThumbnailUrl && videoThumbnailUrl.trim() !== '') {
-								// Validate thumbnail URL format
-								let parsedThumbUrl: URL;
-								try {
-									parsedThumbUrl = new URL(videoThumbnailUrl);
-								} catch {
-									throw new NodeApiError(
-										this.getNode(),
-										{ message: `Invalid thumbnail URL format: "${videoThumbnailUrl}" is not a valid URL` },
-										{ itemIndex: i },
-									);
-								}
-
-								if (parsedThumbUrl.protocol !== 'http:' && parsedThumbUrl.protocol !== 'https:') {
-									throw new NodeApiError(
-										this.getNode(),
-										{ message: `Invalid thumbnail URL protocol: URL must use HTTP or HTTPS (got ${parsedThumbUrl.protocol})` },
-										{ itemIndex: i },
-									);
-								}
-
-								videoInput.thumbnailUrl = videoThumbnailUrl;
-							}
-
+							if (videoThumbnailUrl?.trim()) videoInput.thumbnailUrl = videoThumbnailUrl;
 							input.assets = [{ video: videoInput }];
 						}
 
-						// Add dueAt if custom scheduled
 						if (shareMode === 'customScheduled') {
 							const dueAt = this.getNodeParameter('dueAt', i) as string;
-							// Ensure ISO 8601 format with timezone
 							input.dueAt = new Date(dueAt).toISOString();
 						}
 
-						// GraphQL mutation
 						const mutation = `
 							mutation CreatePost($input: CreatePostInput!) {
 								createPost(input: $input) {
@@ -1649,72 +1347,39 @@ channelId: [
 											}
 										}
 									}
-									... on InvalidInputError {
-										message
-									}
-									... on UnauthorizedError {
-										message
-									}
-									... on UnexpectedError {
-										message
-									}
-									... on NotFoundError {
-										message
-									}
-									... on LimitReachedError {
-										message
-									}
-									... on RestProxyError {
-										message
-										code
-										link
-									}
+									... on InvalidInputError { message }
+									... on UnauthorizedError { message }
+									... on UnexpectedError { message }
+									... on NotFoundError { message }
+									... on LimitReachedError { message }
+									... on RestProxyError { message code link }
 								}
 							}
 						`;
 
-						const body = {
-							query: mutation,
-							variables: { input },
-						};
-
 						const response = await this.helpers.httpRequestWithAuthentication.call(this, 'bufferApi', {
 							method: 'POST' as IHttpRequestMethods,
 							url: apiUrl,
-							headers: {
-								'Content-Type': 'application/json',
-							},
-							body,
+							headers: { 'Content-Type': 'application/json' },
+							body: { query: mutation, variables: { input } },
 							json: true,
 						});
 
-						// Check for GraphQL errors
-						if (response.errors && response.errors.length > 0) {
+						if (response.errors?.length > 0) {
 							throw new NodeApiError(this.getNode(), response.errors[0], { itemIndex: i });
 						}
 
 						const result = response.data?.createPost;
-
-						// Check for mutation-level errors
 						if (result?.message) {
 							throw new NodeApiError(this.getNode(), result, { itemIndex: i });
 						}
 
-						// Return the post
-						const post = result?.post;
-
-						returnData.push({
-							json: post,
-							pairedItem: { item: i },
-						});
+						returnData.push({ json: result?.post, pairedItem: { item: i } });
 					}
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {
-					returnData.push({
-						json: { error: (error as Error).message },
-						pairedItem: { item: i },
-					});
+					returnData.push({ json: { error: (error as Error).message }, pairedItem: { item: i } });
 					continue;
 				}
 				throw error;
